@@ -1,6 +1,6 @@
 ################### vLLM Base Dockerfile ###################
-# This Dockerfile is for building the image that the  
-# vLLM worker container will use as its base image. 
+# This Dockerfile is for building the image that the
+# vLLM worker container will use AS its base image.
 # If your changes are outside of the vLLM source code, you
 # do not need to build this image.
 ##########################################################
@@ -29,10 +29,12 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements-cuda.txt
 
 # Install development dependencies
+COPY vllm/requirements-lint.txt requirements-lint.txt
 COPY vllm/requirements-dev.txt requirements-dev.txt
+COPY vllm/requirements-test.txt requirements-test.txt
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements-dev.txt
-    
+
 ARG torch_cuda_arch_list='7.0 7.5 8.0 8.6 8.9 9.0+PTX'
 ENV TORCH_CUDA_ARCH_LIST=${torch_cuda_arch_list}
 
@@ -57,7 +59,7 @@ COPY vllm/CMakeLists.txt CMakeLists.txt
 COPY vllm/requirements-common.txt requirements-common.txt
 COPY vllm/requirements-cuda${WORKER_CUDA_VERSION}.txt requirements-cuda.txt
 COPY vllm/pyproject.toml pyproject.toml
-COPY vllm/vllm vllm 
+COPY vllm/vllm vllm
 
 # Set environment variables for building extensions
 ENV WORKER_CUDA_VERSION=${WORKER_CUDA_VERSION}
@@ -71,7 +73,7 @@ RUN --mount=type=cache,target=/root/.cache/ccache \
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip cache remove vllm_nccl*
 
-FROM dev as flash-attn-builder
+FROM dev AS flash-attn-builder
 # max jobs used for build
 # flash attention version
 ARG flash_attn_version=v2.5.8
@@ -83,7 +85,7 @@ WORKDIR /usr/src/flash-attention-v2
 RUN pip --verbose wheel flash-attn==${FLASH_ATTN_VERSION} \
     --no-build-isolation --no-deps --no-cache-dir
 
-FROM dev as NCCL-installer
+FROM dev AS NCCL-installer
 
 # Re-declare ARG after FROM
 ARG WORKER_CUDA_VERSION
