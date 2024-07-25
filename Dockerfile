@@ -1,6 +1,6 @@
 ARG WORKER_CUDA_VERSION=11.8.0
 ARG BASE_IMAGE_VERSION=1.0.0
-FROM runpod/worker-vllm:base-${BASE_IMAGE_VERSION}-cuda${WORKER_CUDA_VERSION} AS vllm-base
+FROM netrve/worker-vllm:base-${BASE_IMAGE_VERSION}-cuda${WORKER_CUDA_VERSION} AS vllm-base
 
 RUN apt-get update -y \
     && apt-get install -y python3-pip
@@ -28,7 +28,7 @@ ENV MODEL_NAME=$MODEL_NAME \
     HF_DATASETS_CACHE="${BASE_PATH}/huggingface-cache/datasets" \
     HUGGINGFACE_HUB_CACHE="${BASE_PATH}/huggingface-cache/hub" \
     HF_HOME="${BASE_PATH}/huggingface-cache/hub" \
-    HF_HUB_ENABLE_HF_TRANSFER=1 
+    HF_HUB_ENABLE_HF_TRANSFER=1
 
 ENV PYTHONPATH="/:/vllm-workspace"
 
